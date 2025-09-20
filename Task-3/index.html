@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tic Tac Toe - Task 03</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: linear-gradient(135deg, #ff9a9e, #fad0c4); /* soft pink gradient */
+      font-family: Arial, sans-serif;
+    }
+    .container {
+      text-align: center;
+      background: #fff3f3;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+    h1 {
+      margin-bottom: 20px;
+      color: #444;
+    }
+    .board {
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      grid-template-rows: repeat(3, 100px);
+      gap: 8px;
+      margin: 20px auto;
+    }
+    .cell {
+      width: 100px;
+      height: 100px;
+      background: #ffe0ac; /* warm yellow */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 2.5rem;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 12px;
+      transition: background 0.3s, transform 0.2s;
+    }
+    .cell:hover {
+      background: #ffcc70; /* darker yellow on hover */
+      transform: scale(1.05);
+    }
+    .winner {
+      color: #008000;
+      font-weight: bold;
+      margin-top: 15px;
+    }
+    button {
+      margin-top: 15px;
+      padding: 10px 20px;
+      border: none;
+      background: #ff758c;
+      color: #fff;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background: #ff5f6d;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Tic Tac Toe</h1>
+    <div class="board" id="board"></div>
+    <p id="status"></p>
+    <button onclick="resetGame()">Restart Game</button>
+  </div>
+
+  <script>
+    const boardElement = document.getElementById("board");
+    const statusElement = document.getElementById("status");
+    let board = ["", "", "", "", "", "", "", "", ""];
+    let currentPlayer = "X";
+    let gameActive = true;
+
+    const winningConditions = [
+      [0, 1, 2],
+      [3, 4, 5],
+      [6, 7, 8],
+      [0, 3, 6],
+      [1, 4, 7],
+      [2, 5, 8],
+      [0, 4, 8],
+      [2, 4, 6]
+    ];
+
+    function createBoard() {
+      boardElement.innerHTML = "";
+      board.forEach((cell, index) => {
+        const cellElement = document.createElement("div");
+        cellElement.classList.add("cell");
+        cellElement.setAttribute("data-index", index);
+        cellElement.addEventListener("click", handleClick);
+        boardElement.appendChild(cellElement);
+      });
+    }
+
+    function handleClick(e) {
+      const index = e.target.getAttribute("data-index");
+      if (board[index] !== "" || !gameActive) return;
+
+      board[index] = currentPlayer;
+      e.target.textContent = currentPlayer;
+
+      if (checkWinner()) {
+        statusElement.textContent = `🎉 Player ${currentPlayer} Wins!`;
+        statusElement.classList.add("winner");
+        gameActive = false;
+        return;
+      }
+
+      if (!board.includes("")) {
+        statusElement.textContent = "It's a Draw!";
+        gameActive = false;
+        return;
+      }
+
+      currentPlayer = currentPlayer === "X" ? "O" : "X";
+      statusElement.textContent = `Player ${currentPlayer}'s Turn`;
+    }
+
+    function checkWinner() {
+      return winningConditions.some(condition => {
+        const [a, b, c] = condition;
+        return (
+          board[a] !== "" &&
+          board[a] === board[b] &&
+          board[a] === board[c]
+        );
+      });
+    }
+
+    function resetGame() {
+      board = ["", "", "", "", "", "", "", "", ""];
+      currentPlayer = "X";
+      gameActive = true;
+      statusElement.textContent = `Player ${currentPlayer}'s Turn`;
+      statusElement.classList.remove("winner");
+      createBoard();
+    }
+
+    resetGame();
+  </script>
+</body>
+</html>
